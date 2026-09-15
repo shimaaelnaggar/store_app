@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:store/views/home_view.dart';
 import 'package:store/views/update_product_view.dart';
 
-
-void main() {
+void main() async {
   runApp(const StoreApp());
 }
 
@@ -13,10 +12,10 @@ class StoreApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-    debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       routes: {
-      HomeView.id:(context)=>const HomeView(),
-        UpdateProductView.id:(context)=>const UpdateProductView(),
+        HomeView.id: (context) => const HomeView(),
+        UpdateProductView.id: (context) => const UpdateProductView(),
       },
       initialRoute: HomeView.id,
     );

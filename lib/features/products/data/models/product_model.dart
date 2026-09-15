@@ -1,4 +1,5 @@
 import 'package:store/features/products/data/models/rating_model.dart';
+import 'package:store/features/products/domain/entites/product.dart';
 
 class ProductModel {
   final int id;
@@ -36,4 +37,13 @@ class ProductModel {
         'category': category,
         'price': price
       };
+
+  Product toEntity() => Product(
+      price: price,
+      category: category,
+      desc: desc,
+      id: id,
+      image: image,
+      rating: ratingModel.toEntity(),
+      title: title);
 }

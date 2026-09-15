@@ -1,5 +1,12 @@
 import 'package:dio/dio.dart';
 
 class DioClient {
-  final Dio dio = Dio(BaseOptions(baseUrl: "https://fakestoreapi.com/"));
+  static final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: "https://fakestoreapi.com/",
+      connectTimeout: const Duration(seconds: 2),
+      receiveTimeout: const Duration(seconds: 2),
+      sendTimeout: const Duration(seconds: 2),
+    ),
+  );
 }

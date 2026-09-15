@@ -1,3 +1,5 @@
+import 'package:store/features/products/domain/entites/rating.dart';
+
 class RatingModel {
   final double rate;
   final int count;
@@ -8,4 +10,6 @@ class RatingModel {
       RatingModel(rate: json['rate'], count: json['count']);
 
   Map<String, dynamic> toJson() => {'rate': rate, 'count': count};
+
+  Rating toEntity() => Rating(count: count, rate: rate);
 }
