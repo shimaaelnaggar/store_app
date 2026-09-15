@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:store/core/di/service_locator.dart';
 import 'package:store/views/home_view.dart';
 import 'package:store/views/update_product_view.dart';
 
 void main() async {
+  setupAppServiceLocator();
   runApp(const StoreApp());
 }
 

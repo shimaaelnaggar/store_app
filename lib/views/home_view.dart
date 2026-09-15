@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:store/models/produt_model.dart';
-import 'package:store/services/get_all_products.dart';
+import 'package:store/features/products/data/models/product_model.dart';
+
 import 'package:store/widgets/custom_card.dart';
 
 class HomeView extends StatelessWidget {

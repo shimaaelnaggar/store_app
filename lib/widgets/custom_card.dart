@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:store/models/produt_model.dart';
+import 'package:store/features/products/data/models/product_model.dart';
+
 import 'package:store/views/update_product_view.dart';
 
 class CustomCard extends StatelessWidget {

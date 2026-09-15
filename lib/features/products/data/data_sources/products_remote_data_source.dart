@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:store/core/errors/api_error_handler.dart';
-import 'package:store/core/network/dio_client.dart';
 import 'package:store/features/products/data/models/product_model.dart';
 
 abstract class BaseProductsRemoteDataSource {
@@ -12,6 +11,9 @@ abstract class BaseProductsRemoteDataSource {
 }
 
 class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
+  final Dio dio;
+
+  ProductsRemoteDataSource({required this.dio});
   // @override
   // Future<ProductModel> addNewProduct(ProductModel product) {}
 
@@ -21,7 +23,7 @@ class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
   @override
   Future<List<ProductModel>> getAllProducts() async {
     try {
-      final response = await DioClient.dio.get('products');
+      final response = await dio.get('products');
 
       return (response.data as List)
           .map((element) => ProductModel.fromJson(element))
