@@ -1,14 +1,14 @@
 
-import 'package:store/helper/api.dart';
+// import 'package:store/helper/api.dart';
 
-class AllCategories{
+// class AllCategories{
 
-  Future<List<dynamic>> getAllCategories()async{
+//   Future<List<dynamic>> getAllCategories()async{
 
-    List<String> data= await Api().get(url:"https://fakestoreapi.com/products/categories",);
+//     List<String> data= await Api().get(url:"https://fakestoreapi.com/products/categories",);
 
-    return data;
+//     return data;
 
-  }
+//   }
 
-}
+// }
