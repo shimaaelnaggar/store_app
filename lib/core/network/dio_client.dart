@@ -1,12 +1,26 @@
 import 'package:dio/dio.dart';
 
 class DioClient {
-  static Dio createDio() => Dio(
-        BaseOptions(
-          baseUrl: "https://fakestoreapi.com/",
-          connectTimeout: const Duration(seconds: 2),
-          receiveTimeout: const Duration(seconds: 2),
-          sendTimeout: const Duration(seconds: 2),
-        ),
-      );
+  static Dio createDio() {
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: "https://fakestoreapi.com/",
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+      ),
+    );
+
+    dio.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestHeader: true,
+        responseUrl: true,
+        responseHeader: true,
+        error: true,
+      ),
+    );
+
+    return dio;
+  }
 }
