@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:store/core/constants/app_colors.dart';
@@ -9,22 +10,28 @@ class ProductCard extends StatelessWidget {
   final String categoryName;
   final String title;
   final double rate;
+  final int reviewsCount;
+  final int discountPercentage;
+  final int stock;
   final double price;
-  final int ratingCount;
   final void Function()? onPressed;
-  const ProductCard(
-      {Key? key,
-      required this.imgUrl,
-      required this.categoryName,
-      required this.title,
-      required this.rate,
-      required this.price,
-      required this.onPressed,
-      required this.ratingCount})
-      : super(key: key);
+  const ProductCard({
+    Key? key,
+    required this.imgUrl,
+    required this.categoryName,
+    required this.title,
+    required this.rate,
+    required this.price,
+    required this.onPressed,
+    required this.reviewsCount,
+    required this.discountPercentage,
+    required this.stock,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final bool isOutOfStock = stock <= 0;
+    final bool hasDiscount = discountPercentage > 0;
     return Card(
       color: AppColors.secondaryColor,
       shape: RoundedRectangleBorder(
@@ -38,22 +45,39 @@ class ProductCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(AppSpacing.xs),
               child: Container(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: AppColors.textSecodaryColor),
-                child: Image.network(
-                  imgUrl,
-                  fit: BoxFit.contain,
-                  width: double.infinity,
-                  height: 120.h,
-                ),
-              ),
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: imgUrl,
+                    height: 120.h,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.itemsNumberColor,
+                        ),
+                      );
+                    },
+                    errorWidget: (context, url, error) {
+                      return Image.asset(
+                        'assets/images/product_placeholder.jpg',
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  )),
             ),
             const SizedBox(
               height: AppSpacing.sm,
             ),
-            Text(categoryName.toUpperCase(), style: AppTextStyles.bodyMedium),
+            Text(
+              categoryName.toUpperCase(),
+              style: AppTextStyles.bodyMedium,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               title,
@@ -67,37 +91,68 @@ class ProductCard extends StatelessWidget {
                 const Icon(
                   Icons.star,
                   color: AppColors.ratingColor,
+                  size: 18,
                 ),
                 SizedBox(width: 2.w),
-                Text(rate.toString(), style: AppTextStyles.bodySemiBold),
-                const SizedBox(width: AppSpacing.xs),
-                Text('($ratingCount)', style: AppTextStyles.bodyMedium),
+                Text(
+                  rate.toStringAsFixed(1),
+                  style: AppTextStyles.bodySemiBold,
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  '($reviewsCount)',
+                  style: AppTextStyles.bodyMedium,
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  '\$$price',
-                  style: AppTextStyles.bodyLarge,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (hasDiscount)
+                      Text(
+                        '\$${price.toStringAsFixed(2)}',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                    Text(
+                      hasDiscount
+                          ? '\$${(price * (1 - discountPercentage / 100)).toStringAsFixed(2)}'
+                          : '\$${price.toStringAsFixed(2)}',
+                      style: AppTextStyles.bodyLarge,
+                    ),
+                  ],
                 ),
                 Container(
-                  height: 28.h,
+                  height: 40.h,
+                  width: 40.w,
                   decoration: const BoxDecoration(
                     color: AppColors.primaryColor,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                      onPressed: onPressed,
-                      icon: Icon(
-                        Icons.add_shopping_cart,
-                        color: AppColors.secondaryColor,
-                        size: 20.r,
-                      )),
-                )
+                    onPressed: isOutOfStock ? null : onPressed,
+                    icon: Icon(
+                      Icons.add_shopping_cart,
+                      color: AppColors.secondaryColor,
+                      size: 20.r,
+                    ),
+                  ),
+                ),
               ],
             ),
+            if (isOutOfStock) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Out of stock',
+                style: AppTextStyles.bodyMedium,
+              ),
+            ],
           ],
         ),
       ),

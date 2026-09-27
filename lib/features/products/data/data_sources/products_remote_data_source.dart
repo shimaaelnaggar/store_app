@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:store/core/errors/api_error_handler.dart';
-import 'package:store/features/products/data/models/product_model.dart';
+import 'package:store/features/products/data/models/products_recponse_model.dart';
 
 abstract class BaseProductsRemoteDataSource {
-  Future<List<ProductModel>> getAllProducts();
+  Future<ProductsResponseModel>getAllProducts({ required int page, required int pageSize});
   // Future<ProductModel> getSingleProduct(int id);
   // Future<ProductModel> addNewProduct(ProductModel product);
   // Future<ProductModel> updateProduct(ProductModel product);
@@ -21,13 +21,20 @@ class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
   // Future<void> deleteProduct(int id) {}
 
   @override
-  Future<List<ProductModel>> getAllProducts() async {
+  Future<ProductsResponseModel> getAllProducts({
+    required int page,
+    required int pageSize,
+  }) async {
     try {
-      final response = await dio.get('products');
+      final response = await dio.get(
+        '/api/products',
+        queryParameters: {
+          'page': page,
+          'pageSize': pageSize,
+        },
+      );
 
-      return (response.data as List)
-          .map((element) => ProductModel.fromJson(element))
-          .toList();
+      return ProductsResponseModel.fromJson(response.data);
     } on DioException catch (exception) {
       throw ApiErrorHandler().handle(exception);
     }

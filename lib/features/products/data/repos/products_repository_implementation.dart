@@ -2,8 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:store/core/errors/exceptions.dart';
 import 'package:store/core/errors/failures.dart';
 import 'package:store/features/products/data/data_sources/products_remote_data_source.dart';
-import 'package:store/features/products/data/models/product_model.dart';
-import 'package:store/features/products/domain/entites/product.dart';
+import 'package:store/features/products/domain/entites/products_result.dart';
 import 'package:store/features/products/domain/repos/product_repository_contract.dart';
 
 class ProductsRepositoryImplementation implements ProductRepositoryContract {
@@ -12,10 +11,20 @@ class ProductsRepositoryImplementation implements ProductRepositoryContract {
   ProductsRepositoryImplementation({required this.dataSource});
 
   @override
-  Future<Either<Failure, List<Product>>> getAllProducts() async {
+  Future<Either<Failure, ProductsResult>> getAllProducts(
+  {required int page,required int pageSize}
+      ) async {
     try {
-      List<ProductModel> products = await dataSource.getAllProducts();
-      return right(products.map((product) => product.toEntity()).toList());
+      final response = await dataSource.getAllProducts(
+        page: page,
+        pageSize: pageSize,
+      );
+      return right(ProductsResult(
+          products: response.items.map((element)=>element.toEntity()).toList(),
+          page: response.page,
+          pageSize: response.pageSize,
+          totalCount: response.totalCount, hasNextPage:response.hasNextPage,
+          hasPreviousPage: response.hasPreviousPage));
     } on AppException catch (exception) {
       if (exception is ServerException) {
         return Left(ServerFailure(

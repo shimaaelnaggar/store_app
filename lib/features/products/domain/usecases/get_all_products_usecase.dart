@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:store/core/errors/failures.dart';
-import 'package:store/features/products/domain/entites/product.dart';
+import 'package:store/features/products/domain/entites/products_result.dart';
 import 'package:store/features/products/domain/repos/product_repository_contract.dart';
 
 class GetAllProductsUseCase {
@@ -8,7 +8,10 @@ class GetAllProductsUseCase {
 
   GetAllProductsUseCase({required this.repository});
 
-  Future<Either<Failure, List<Product>>> execute() {
-    return repository.getAllProducts();
+  Future<Either<Failure, ProductsResult>> execute({
+    required int page,
+    required int pageSize,
+}) {
+    return repository.getAllProducts(page: page,pageSize:pageSize );
   }
 }

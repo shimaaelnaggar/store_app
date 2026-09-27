@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:store/core/di/service_locator.dart';
 import 'package:store/features/products/presentation/views/home_view.dart';
+import 'core/di/service_locator.dart';
 
 void main() async {
   setupAppServiceLocator();
