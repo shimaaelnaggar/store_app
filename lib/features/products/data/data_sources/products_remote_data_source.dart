@@ -3,7 +3,8 @@ import 'package:store/core/errors/api_error_handler.dart';
 import 'package:store/features/products/data/models/products_recponse_model.dart';
 
 abstract class BaseProductsRemoteDataSource {
-  Future<ProductsResponseModel>getAllProducts({ required int page, required int pageSize});
+  Future<ProductsResponseModel> getAllProducts(
+      {required int page, required int pageSize, String? searchQuery});
   // Future<ProductModel> getSingleProduct(int id);
   // Future<ProductModel> addNewProduct(ProductModel product);
   // Future<ProductModel> updateProduct(ProductModel product);
@@ -24,6 +25,7 @@ class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
   Future<ProductsResponseModel> getAllProducts({
     required int page,
     required int pageSize,
+    String? searchQuery,
   }) async {
     try {
       final response = await dio.get(
@@ -31,6 +33,8 @@ class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
         queryParameters: {
           'page': page,
           'pageSize': pageSize,
+          if (searchQuery != null && searchQuery.isNotEmpty)
+            'searchTerm': searchQuery
         },
       );
 
@@ -41,12 +45,10 @@ class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
   }
 }
 
+// @override
+// Future<ProductModel> getSingleProduct(int id) {
 
-  // @override
-  // Future<ProductModel> getSingleProduct(int id) {
+// }
 
-  // }
-
-  // @override
-  // Future<ProductModel> updateProduct(ProductModel product) {}
-
+// @override
+// Future<ProductModel> updateProduct(ProductModel product) {}

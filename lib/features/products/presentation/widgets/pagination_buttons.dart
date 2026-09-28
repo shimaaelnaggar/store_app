@@ -75,7 +75,7 @@ class PaginationButtons extends StatelessWidget {
               TextButton(
                 onPressed:
                     hasNextPage ? () => onPageChanged(currentPage + 1) : null,
-                child: const Text('Next'),
+                child: const Text('Next',style: TextStyle(color: AppColors.primaryColor)),
               ),
             ],
           ),

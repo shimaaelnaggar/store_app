@@ -57,7 +57,7 @@ class ProductCard extends StatelessWidget {
                     placeholder: (context, url) {
                       return const Center(
                         child: CircularProgressIndicator(
-                          color: AppColors.itemsNumberColor,
+                          color: AppColors.primaryColor,
                         ),
                       );
                     },

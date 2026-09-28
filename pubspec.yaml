@@ -48,6 +48,8 @@ dependencies:
   get_it: ^9.2.1
   flutter_screenutil: ^5.9.3
   cached_network_image: ^3.4.1
+  bloc_concurrency: ^0.3.0
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:

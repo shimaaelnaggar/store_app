@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:store/core/constants/app_spacing.dart';
 import 'package:store/core/constants/app_text_styles.dart';
 
+import '../../../../core/constants/app_colors.dart';
+
 class ProductsHeader extends StatelessWidget {
   final int productsCount;
   const ProductsHeader({Key? key, required this.productsCount})
@@ -20,12 +22,22 @@ class ProductsHeader extends StatelessWidget {
           ),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xs,
+            ),
             decoration: BoxDecoration(
-              color: const Color(0xffDBE1FF),
+              color: AppColors.productsCountBackgroundColor,
+
               borderRadius: BorderRadius.circular(AppSpacing.md),
             ),
-            child: Text('$productsCount items'),
+            child: Text(
+              '$productsCount items',
+              style: const TextStyle(
+                color: AppColors.primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),

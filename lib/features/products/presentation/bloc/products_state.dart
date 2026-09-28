@@ -13,12 +13,14 @@ class ProductsSuccessState extends ProductsState {
   final bool hasNextPage;
   final bool hasPreviousPage;
   final int totalCount;
+  final String? searchQuery;
   ProductsSuccessState({
     required this.products,
     required this.page,
     required this.hasNextPage,
     required this.hasPreviousPage,
     required this.totalCount,
+    this.searchQuery,
   });
 }
 

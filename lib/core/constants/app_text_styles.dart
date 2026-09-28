@@ -25,7 +25,7 @@ class AppTextStyles {
   static  TextStyle bodyMedium = TextStyle(
     fontSize: 10.sp,
     fontWeight: FontWeight.w500,
-    color: AppColors.textSecodaryColor
+    color: AppColors.textSecondaryColor
   );
 
  

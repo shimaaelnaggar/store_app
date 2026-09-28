@@ -12,18 +12,20 @@ class ProductsRepositoryImplementation implements ProductRepositoryContract {
 
   @override
   Future<Either<Failure, ProductsResult>> getAllProducts(
-  {required int page,required int pageSize}
-      ) async {
+      {required int page, required int pageSize, String? searchQuery}) async {
     try {
       final response = await dataSource.getAllProducts(
         page: page,
         pageSize: pageSize,
+        searchQuery: searchQuery,
       );
       return right(ProductsResult(
-          products: response.items.map((element)=>element.toEntity()).toList(),
+          products:
+              response.items.map((element) => element.toEntity()).toList(),
           page: response.page,
           pageSize: response.pageSize,
-          totalCount: response.totalCount, hasNextPage:response.hasNextPage,
+          totalCount: response.totalCount,
+          hasNextPage: response.hasNextPage,
           hasPreviousPage: response.hasPreviousPage));
     } on AppException catch (exception) {
       if (exception is ServerException) {

@@ -10,6 +10,7 @@ import 'package:store/features/products/presentation/bloc/products_state.dart';
 import 'package:store/features/products/presentation/widgets/pagination_buttons.dart';
 import 'package:store/features/products/presentation/widgets/product_card.dart';
 import 'package:store/features/products/presentation/widgets/products_header.dart';
+import 'package:store/widgets/custom_text_field.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -20,86 +21,103 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(),
       body: BlocProvider(
         create: (context) => getIt<ProductsBloc>()..add(GetAllProductsEvent()),
-        child: Column(
-          children: [
-            BlocSelector<ProductsBloc, ProductsState, int>(
-              selector: (state) {
-                if (state is ProductsSuccessState) {
-                  return state.totalCount;
-                }
-                return 0;
-              },
-              builder: (context, totalCount) {
-                return ProductsHeader(
-                  productsCount: totalCount,
-                );
-              },
-            ),
-            Expanded(
-              child: BlocBuilder<ProductsBloc, ProductsState>(
-                builder: (context, state) {
-                  if (state is ProductsLoadingState) {
-                    return const Center(
-                        child: CircularProgressIndicator(
-                      color: AppColors.itemsNumberColor,
-                    ));
-                  }
-                  if (state is ProductsSuccessState) {
-                    final List<Product> products = state.products;
-                    return CustomScrollView(slivers: [
-                      SliverGrid(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final product = products[index];
+        child: Builder(builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              children: [
+                CustomTextField(
+                    hintText: 'Search for products...',
+                    inputType: TextInputType.text,
+                    onChanged: (value) {
+                      print('SEARCH VALUE: "$value"');
+                      context
+                          .read<ProductsBloc>()
+                          .add(SearchProductsEvent(searchQuery: value));
+                    }),
+                BlocSelector<ProductsBloc, ProductsState, int>(
+                  selector: (state) {
+                    if (state is ProductsSuccessState) {
+                      return state.totalCount;
+                    }
+                    return 0;
+                  },
+                  builder: (context, totalCount) {
+                    return ProductsHeader(
+                      productsCount: totalCount,
+                    );
+                  },
+                ),
+                Expanded(
+                  child: BlocBuilder<ProductsBloc, ProductsState>(
+                    builder: (context, state) {
+                      if (state is ProductsLoadingState) {
+                        return const Center(
+                            child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                        ));
+                      }
+                      if (state is ProductsSuccessState) {
+                        final List<Product> products = state.products;
+                        return CustomScrollView(slivers: [
+                          SliverGrid(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  final product = products[index];
 
-                              return ProductCard(
-                                imgUrl: product.coverPictureUrl,
-                                categoryName: product.categories.isNotEmpty
-                                    ? product.categories.first
-                                    : '',
-                                title: product.name,
-                                rate: product.rating,
-                                price: product.price,
-                                discountPercentage: product.discountPercentage,
-                                reviewsCount: product.reviewsCount,
-                                stock: product.stock,
-                                onPressed: () {},
-                              );
-                            },
-                            childCount: products.length,
+                                  return ProductCard(
+                                    imgUrl: product.coverPictureUrl,
+                                    categoryName: product.categories.isNotEmpty
+                                        ? product.categories.first
+                                        : '',
+                                    title: product.name,
+                                    rate: product.rating,
+                                    price: product.price,
+                                    discountPercentage:
+                                        product.discountPercentage,
+                                    reviewsCount: product.reviewsCount,
+                                    stock: product.stock,
+                                    onPressed: () {},
+                                  );
+                                },
+                                childCount: products.length,
+                              ),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.55,
+                                crossAxisSpacing: AppSpacing.sm,
+                                mainAxisSpacing: AppSpacing.sm,
+                              )),
+                          SliverToBoxAdapter(
+                            child: PaginationButtons(
+                              currentPage: state.page,
+                              hasNextPage: state.hasNextPage,
+                              hasPreviousPage: state.hasPreviousPage,
+                              totalCount: state.totalCount,
+                              pageSize: 10,
+                              onPageChanged: (page) {
+                                context.read<ProductsBloc>().add(
+                                      GetAllProductsEvent(
+                                          page: page,
+                                          searchQuery: state.searchQuery),
+                                    );
+                              },
+                            ),
                           ),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.6,
-                            crossAxisSpacing: AppSpacing.sm,
-                            mainAxisSpacing: AppSpacing.sm,
-                          )),
-                      SliverToBoxAdapter(
-                        child: PaginationButtons(
-                          currentPage: state.page,
-                          hasNextPage: state.hasNextPage,
-                          hasPreviousPage: state.hasPreviousPage,
-                          totalCount: state.totalCount,
-                          pageSize: 10,
-                          onPageChanged: (page) {
-                            context.read<ProductsBloc>().add(
-                                  GetAllProductsEvent(page: page),
-                                );
-                          },
-                        ),
-                      ),
-                    ]);
-                  }
-                  if (state is ProductsFailureState) {
-                    return Center(child: Text(state.errorMessage));
-                  }
-                  return const SizedBox();
-                },
-              ),
+                        ]);
+                      }
+                      if (state is ProductsFailureState) {
+                        return Center(child: Text(state.errorMessage));
+                      }
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        }),
       ),
     );
   }
