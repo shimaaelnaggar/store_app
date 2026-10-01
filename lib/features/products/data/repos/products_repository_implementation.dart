@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:store/core/errors/exceptions.dart';
 import 'package:store/core/errors/failures.dart';
 import 'package:store/features/products/data/data_sources/products_remote_data_source.dart';
+import 'package:store/features/products/domain/entites/product.dart';
 import 'package:store/features/products/domain/entites/products_result.dart';
 import 'package:store/features/products/domain/repos/product_repository_contract.dart';
 
@@ -27,6 +28,40 @@ class ProductsRepositoryImplementation implements ProductRepositoryContract {
           totalCount: response.totalCount,
           hasNextPage: response.hasNextPage,
           hasPreviousPage: response.hasPreviousPage));
+    } on AppException catch (exception) {
+      if (exception is ServerException) {
+        return Left(ServerFailure(
+          errorMessage: exception.errorMessage,
+        ));
+      }
+      if (exception is NetworkException) {
+        return Left(
+          NetworkFailure(
+            errorMessage: exception.errorMessage,
+          ),
+        );
+      }
+
+      if (exception is TimeOutException) {
+        return Left(
+          TimeoutFailure(
+            errorMessage: exception.errorMessage,
+          ),
+        );
+      }
+      return Left(
+        UnknownFailure(
+          errorMessage: exception.errorMessage,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, Product>> getSingleProduct(String id) async {
+    try {
+      final response = await dataSource.getSingleProduct(id);
+      return right(response.toEntity());
     } on AppException catch (exception) {
       if (exception is ServerException) {
         return Left(ServerFailure(

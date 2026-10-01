@@ -4,8 +4,10 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:store/features/products/domain/usecases/get_all_products_usecase.dart';
-import 'package:store/features/products/presentation/bloc/products_event.dart';
-import 'package:store/features/products/presentation/bloc/products_state.dart';
+import 'package:store/features/products/presentation/bloc/products/products_event.dart';
+import 'package:store/features/products/presentation/bloc/products/products_state.dart';
+
+import '../../../domain/usecases/get_single_product_usecase.dart';
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final GetAllProductsUseCase getAllProductsUseCase;
@@ -30,7 +32,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
               )));
     });
     on<SearchProductsEvent>(
-          (event, emit) async {
+      (event, emit) async {
         emit(ProductsLoadingState());
 
         final result = await getAllProductsUseCase.execute(
@@ -42,12 +44,12 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         if (emit.isDone) return;
 
         result.fold(
-              (failure) => emit(
+          (failure) => emit(
             ProductsFailureState(
               errorMessage: failure.errorMessage,
             ),
           ),
-              (productsResult) => emit(
+          (productsResult) => emit(
             ProductsSuccessState(
               products: productsResult.products,
               page: productsResult.page,
@@ -63,6 +65,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         const Duration(milliseconds: 500),
       ),
     );
+
 // on<LoadNextProductsPageEvent>((event, emit) async {
 //   final currentState = state;
 //   if (currentState is! ProductsSuccessState ||
@@ -102,9 +105,10 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 // });
   }
 }
+
 EventTransformer<T> debounceRestartable<T>(
-    Duration duration,
-    ) {
+  Duration duration,
+) {
   return (events, mapper) {
     return restartable<T>()(
       events.debounceTime(duration),

@@ -44,8 +44,9 @@ class ProductModel {
       productCode: json['productCode'],
       name: json['name'],
       description: json['description'],
-      arabicName: json['arabicName'],
-      arabicDescription: json['arabicDescription'],
+      arabicName: json['arabicName'] ?? json['nameArabic'],
+      arabicDescription:
+      json['arabicDescription'] ?? json['descriptionArabic'],
       color: json['color'],
       coverPictureUrl: json['coverPictureUrl'],
       categories: List<String>.from(json['categories'] ?? []),

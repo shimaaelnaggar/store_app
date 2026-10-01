@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/core/constants/app_colors.dart';
 import 'package:store/core/constants/app_spacing.dart';
 import 'package:store/core/di/service_locator.dart';
 import 'package:store/features/products/domain/entites/product.dart';
-import 'package:store/features/products/presentation/bloc/products_bloc.dart';
-import 'package:store/features/products/presentation/bloc/products_event.dart';
-import 'package:store/features/products/presentation/bloc/products_state.dart';
+import 'package:store/features/products/presentation/bloc/products/products_bloc.dart';
+import 'package:store/features/products/presentation/bloc/products/products_event.dart';
+import 'package:store/features/products/presentation/bloc/products/products_state.dart';
 import 'package:store/features/products/presentation/widgets/pagination_buttons.dart';
 import 'package:store/features/products/presentation/widgets/product_card.dart';
 import 'package:store/features/products/presentation/widgets/products_header.dart';
 import 'package:store/widgets/custom_text_field.dart';
+
+import '../widgets/error_section.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -30,7 +33,6 @@ class HomeView extends StatelessWidget {
                     hintText: 'Search for products...',
                     inputType: TextInputType.text,
                     onChanged: (value) {
-                      print('SEARCH VALUE: "$value"');
                       context
                           .read<ProductsBloc>()
                           .add(SearchProductsEvent(searchQuery: value));
@@ -66,6 +68,8 @@ class HomeView extends StatelessWidget {
                                   final product = products[index];
 
                                   return ProductCard(
+                                    onTap: () => context
+                                        .push('/product_details/${product.id}'),
                                     imgUrl: product.coverPictureUrl,
                                     categoryName: product.categories.isNotEmpty
                                         ? product.categories.first
@@ -108,7 +112,12 @@ class HomeView extends StatelessWidget {
                         ]);
                       }
                       if (state is ProductsFailureState) {
-                        return Center(child: Text(state.errorMessage));
+                        return ErrorSection(
+                          message: state.errorMessage,
+                          onPressed: () => context
+                              .read<ProductsBloc>()
+                              .add(GetAllProductsEvent()),
+                        );
                       }
                       return const SizedBox();
                     },

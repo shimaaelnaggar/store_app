@@ -5,7 +5,11 @@ import 'package:store/features/products/data/data_sources/products_remote_data_s
 import 'package:store/features/products/data/repos/products_repository_implementation.dart';
 import 'package:store/features/products/domain/repos/product_repository_contract.dart';
 import 'package:store/features/products/domain/usecases/get_all_products_usecase.dart';
-import 'package:store/features/products/presentation/bloc/products_bloc.dart';
+import 'package:store/features/products/presentation/bloc/products/products_bloc.dart';
+
+import '../../features/products/domain/usecases/get_single_product_usecase.dart';
+import '../../features/products/presentation/bloc/products_details/products_details_bloc.dart';
+import '../routing/app_router.dart';
 
 final getIt = GetIt.instance;
 
@@ -20,4 +24,9 @@ void setupAppServiceLocator() {
       GetAllProductsUseCase(repository: getIt<ProductRepositoryContract>()));
   getIt.registerFactory<ProductsBloc>(() =>
       ProductsBloc(getAllProductsUseCase: getIt<GetAllProductsUseCase>()));
+  getIt.registerLazySingleton<GetSingleProductUseCase>(() =>
+      GetSingleProductUseCase(repository: getIt<ProductRepositoryContract>()));
+  getIt.registerFactory<ProductsDetailsBloc>(() => ProductsDetailsBloc(
+      getSingleProductUseCase: getIt<GetSingleProductUseCase>()));
+  getIt.registerLazySingleton<AppRouter>(() => AppRouter());
 }
