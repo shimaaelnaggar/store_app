@@ -12,7 +12,8 @@ import 'package:store/features/products/presentation/widgets/pagination_buttons.
 import 'package:store/features/products/presentation/widgets/product_card.dart';
 import 'package:store/features/products/presentation/widgets/products_header.dart';
 import 'package:store/widgets/custom_text_field.dart';
-
+import '../../../categories/presentation/bloc/categories_bloc.dart';
+import '../../../categories/presentation/bloc/categories_event.dart';
 import '../widgets/error_section.dart';
 
 class HomeView extends StatelessWidget {
@@ -22,8 +23,17 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: BlocProvider(
-        create: (context) => getIt<ProductsBloc>()..add(GetAllProductsEvent()),
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => getIt<CategoriesBloc>()
+              ..add(GetCategoriesEvent()),
+          ),
+          BlocProvider(
+            create: (context) => getIt<ProductsBloc>()
+              ..add(GetAllProductsEvent()),
+          ),
+        ],
         child: Builder(builder: (context) {
           return Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
@@ -50,6 +60,7 @@ class HomeView extends StatelessWidget {
                     );
                   },
                 ),
+
                 Expanded(
                   child: BlocBuilder<ProductsBloc, ProductsState>(
                     builder: (context, state) {

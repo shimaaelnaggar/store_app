@@ -3,8 +3,9 @@ abstract class ProductsEvent {}
 class GetAllProductsEvent extends ProductsEvent {
   final int page;
   final String? searchQuery;
+  final String? category;
 
-  GetAllProductsEvent({this.page = 1, this.searchQuery});
+  GetAllProductsEvent({this.page = 1, this.searchQuery, this.category});
 }
 
 class SearchProductsEvent extends ProductsEvent {
