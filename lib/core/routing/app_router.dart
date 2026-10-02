@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 
-import '../../features/products/presentation/views/home_view.dart';
+import '../../features/home/presentation/views/home_view.dart';
 import '../../features/products/presentation/views/products_details_view.dart';
 
 class AppRouter {
