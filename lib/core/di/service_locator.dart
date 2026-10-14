@@ -39,8 +39,26 @@ import '../storage/auth_storage.dart';
 final getIt = GetIt.instance;
 
 void setupAppServiceLocator() {
+  //storage
+  getIt.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(),
+  );
+
+  getIt.registerLazySingleton<AuthStorage>(
+    () => AuthStorage(
+      storage: getIt<FlutterSecureStorage>(),
+    ),
+  );
+
   getIt.registerLazySingleton<Dio>(
-    () => DioClient.createDio(),
+    () => DioClient.createDio(
+      getIt<AuthStorage>(),
+      getIt<Dio>(instanceName: 'refreshDio'),
+    ),
+  );
+  getIt.registerLazySingleton<Dio>(
+    () => DioClient.createRefreshDio(),
+    instanceName: 'refreshDio',
   );
 
 //products
@@ -154,17 +172,6 @@ void setupAppServiceLocator() {
       () => ResendOtpRemoteDataSource(
             dio: getIt<Dio>(),
           ));
-
-  //storage
-  getIt.registerLazySingleton<FlutterSecureStorage>(
-    () => const FlutterSecureStorage(),
-  );
-
-  getIt.registerLazySingleton<AuthStorage>(
-    () => AuthStorage(
-      storage: getIt<FlutterSecureStorage>(),
-    ),
-  );
 
 // Login
   getIt.registerLazySingleton<BaseLoginRemoteDataSource>(

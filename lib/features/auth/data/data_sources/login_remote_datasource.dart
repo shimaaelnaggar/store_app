@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:store/core/errors/api_error_handler.dart';
-import 'package:store/features/auth/data/models/Login_response_model.dart';
+import 'package:store/features/auth/data/models/login_response_model.dart';
 import 'package:store/features/auth/data/models/login_model.dart';
 
 abstract class BaseLoginRemoteDataSource {

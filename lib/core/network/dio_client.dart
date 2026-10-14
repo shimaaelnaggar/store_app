@@ -1,15 +1,26 @@
 import 'package:dio/dio.dart';
 
+import '../storage/auth_storage.dart';
+import 'auth_interceptor.dart';
+
 class DioClient {
-  static Dio createDio() {
+  static const baseUrl = 'https://accessories-eshop.runasp.net/';
+  static const Duration timeOut = Duration(seconds: 10);
+  static Dio createDio(AuthStorage authStorage, Dio refreshDio) {
     final dio = Dio(
       BaseOptions(
-        baseUrl: "https://accessories-eshop.runasp.net/",
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-        sendTimeout: const Duration(seconds: 10),
+        baseUrl: baseUrl,
+        connectTimeout: timeOut,
+        receiveTimeout: timeOut,
+        sendTimeout: timeOut,
       ),
     );
+
+    dio.interceptors.add(AuthInterceptor(
+      authStorage: authStorage,
+      refreshDio: refreshDio,
+      dio: dio,
+    ));
 
     dio.interceptors.add(
       LogInterceptor(
@@ -22,5 +33,16 @@ class DioClient {
     );
 
     return dio;
+  }
+
+  static Dio createRefreshDio() {
+    return Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: timeOut,
+        receiveTimeout: timeOut,
+        sendTimeout: timeOut,
+      ),
+    );
   }
 }
