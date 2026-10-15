@@ -15,8 +15,10 @@ class CategoriesRemoteDataSource implements BaseCategoriesRemoteDataSource {
   Future<List<CategoryModel>> getCategories() async {
     try {
       final response = await dio.get('/api/categories');
-      return (response.data as List)
-          .map((e) => CategoryModel.fromJson(e))
+      final data = response.data as Map<String, dynamic>;
+      final categories = data['categories'] as List;
+      return categories
+          .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (exception) {
       throw ApiErrorHandler().handle(exception);

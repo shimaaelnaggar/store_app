@@ -14,6 +14,7 @@ class ProductsSuccessState extends ProductsState {
   final bool hasPreviousPage;
   final int totalCount;
   final String? searchQuery;
+  final String? category;
   ProductsSuccessState({
     required this.products,
     required this.page,
@@ -21,6 +22,7 @@ class ProductsSuccessState extends ProductsState {
     required this.hasPreviousPage,
     required this.totalCount,
     this.searchQuery,
+    this.category,
   });
 }
 

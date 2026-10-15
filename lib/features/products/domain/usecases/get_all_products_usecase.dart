@@ -8,9 +8,16 @@ class GetAllProductsUseCase {
 
   GetAllProductsUseCase({required this.repository});
 
-  Future<Either<Failure, ProductsResult>> execute(
-      {required int page, required int pageSize, String? searchQuery}) {
+  Future<Either<Failure, ProductsResult>> execute({
+    required int page,
+    required int pageSize,
+    String? searchQuery,
+    String? category,
+  }) {
     return repository.getAllProducts(
-        page: page, pageSize: pageSize, searchQuery: searchQuery);
+        page: page,
+        pageSize: pageSize,
+        searchQuery: searchQuery,
+        category: category);
   }
 }

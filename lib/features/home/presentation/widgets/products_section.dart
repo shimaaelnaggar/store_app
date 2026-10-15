@@ -28,38 +28,51 @@ class ProductsSection extends StatelessWidget {
           }
           if (state is ProductsSuccessState) {
             final List<Product> products = state.products;
-            return CustomScrollView(slivers: [
-              SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final product = products[index];
+            if (products.isEmpty) {
+              return const Center(
+                child: Text(
+                  'No products found in this category.',
+                  style: TextStyle(fontSize: 16),
+                ),
+              );
+            }
+            return Column(
+              children: [
+                Expanded(
+                  child: CustomScrollView(slivers: [
+                    SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final product = products[index];
 
-                      return ProductCard(
-                        onTap: () =>
-                            context.push('/product_details/${product.id}'),
-                        imgUrl: product.coverPictureUrl,
-                        categoryName: product.categories.isNotEmpty
-                            ? product.categories.first
-                            : '',
-                        title: product.name,
-                        rate: product.rating,
-                        price: product.price,
-                        discountPercentage: product.discountPercentage,
-                        reviewsCount: product.reviewsCount,
-                        stock: product.stock,
-                        onPressed: () {},
-                      );
-                    },
-                    childCount: products.length,
-                  ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.55,
-                    crossAxisSpacing: AppSpacing.sm,
-                    mainAxisSpacing: AppSpacing.sm,
-                  )),
-              SliverToBoxAdapter(
-                child: PaginationButtons(
+                            return ProductCard(
+                              onTap: () =>
+                                  context.push('/product_details/${product.id}'),
+                              imgUrl: product.coverPictureUrl,
+                              categoryName: product.categories.isNotEmpty
+                                  ? product.categories.first
+                                  : '',
+                              title: product.name,
+                              rate: product.rating,
+                              price: product.price,
+                              discountPercentage: product.discountPercentage,
+                              reviewsCount: product.reviewsCount,
+                              stock: product.stock,
+                              onPressed: () {},
+                            );
+                          },
+                          childCount: products.length,
+                        ),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.55,
+                          crossAxisSpacing: AppSpacing.sm,
+                          mainAxisSpacing: AppSpacing.sm,
+                        )),
+
+                  ]),
+                ),
+                PaginationButtons(
                   currentPage: state.page,
                   hasNextPage: state.hasNextPage,
                   hasPreviousPage: state.hasPreviousPage,
@@ -67,13 +80,13 @@ class ProductsSection extends StatelessWidget {
                   pageSize: 10,
                   onPageChanged: (page) {
                     context.read<ProductsBloc>().add(
-                          GetAllProductsEvent(
-                              page: page, searchQuery: state.searchQuery),
-                        );
+                      GetAllProductsEvent(
+                          page: page, searchQuery: state.searchQuery, category: state.category),
+                    );
                   },
-                ),
-              ),
-            ]);
+                )
+              ],
+            );
           }
           if (state is ProductsFailureState) {
             return ErrorSection(

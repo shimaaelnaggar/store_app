@@ -12,13 +12,18 @@ class ProductsRepositoryImplementation implements ProductRepositoryContract {
   ProductsRepositoryImplementation({required this.dataSource});
 
   @override
-  Future<Either<Failure, ProductsResult>> getAllProducts(
-      {required int page, required int pageSize, String? searchQuery}) async {
+  Future<Either<Failure, ProductsResult>> getAllProducts({
+    required int page,
+    required int pageSize,
+    String? searchQuery,
+    String? category,
+  }) async {
     try {
       final response = await dataSource.getAllProducts(
         page: page,
         pageSize: pageSize,
         searchQuery: searchQuery,
+        category: category,
       );
       return right(ProductsResult(
           products:

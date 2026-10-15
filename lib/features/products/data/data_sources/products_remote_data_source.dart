@@ -6,7 +6,10 @@ import '../models/product_model.dart';
 
 abstract class BaseProductsRemoteDataSource {
   Future<ProductsResponseModel> getAllProducts(
-      {required int page, required int pageSize, String? searchQuery});
+      {required int page,
+      required int pageSize,
+      String? searchQuery,
+      String? category});
   Future<ProductModel> getSingleProduct(String id);
 }
 
@@ -20,6 +23,7 @@ class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
     required int page,
     required int pageSize,
     String? searchQuery,
+    String? category,
   }) async {
     try {
       final response = await dio.get(
@@ -28,7 +32,8 @@ class ProductsRemoteDataSource implements BaseProductsRemoteDataSource {
           'page': page,
           'pageSize': pageSize,
           if (searchQuery != null && searchQuery.isNotEmpty)
-            'searchTerm': searchQuery
+            'searchTerm': searchQuery,
+          if (category != null && category.isNotEmpty) 'category': category
         },
       );
 

@@ -7,8 +7,6 @@ import 'package:store/features/products/domain/usecases/get_all_products_usecase
 import 'package:store/features/products/presentation/bloc/products/products_event.dart';
 import 'package:store/features/products/presentation/bloc/products/products_state.dart';
 
-import '../../../domain/usecases/get_single_product_usecase.dart';
-
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final GetAllProductsUseCase getAllProductsUseCase;
   final int pageSize = 10;
@@ -18,7 +16,10 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     on<GetAllProductsEvent>((event, emit) async {
       emit(ProductsLoadingState());
       final result = await getAllProductsUseCase.execute(
-          pageSize: pageSize, page: event.page, searchQuery: event.searchQuery);
+          pageSize: pageSize,
+          page: event.page,
+          searchQuery: event.searchQuery,
+          category: event.category);
       result.fold(
           (failure) =>
               emit(ProductsFailureState(errorMessage: failure.errorMessage)),
@@ -29,16 +30,21 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
                 hasPreviousPage: productsResult.hasPreviousPage,
                 totalCount: productsResult.totalCount,
                 searchQuery: event.searchQuery,
+                category: event.category,
               )));
     });
     on<SearchProductsEvent>(
       (event, emit) async {
+        final currentState = state;
+        final selectedCategory =
+            currentState is ProductsSuccessState ? currentState.category : null;
         emit(ProductsLoadingState());
 
         final result = await getAllProductsUseCase.execute(
           page: 1,
           pageSize: pageSize,
           searchQuery: event.searchQuery.trim(),
+          category: selectedCategory,
         );
 
         if (emit.isDone) return;
@@ -57,6 +63,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
               hasPreviousPage: productsResult.hasPreviousPage,
               totalCount: productsResult.totalCount,
               searchQuery: event.searchQuery.trim(),
+              category: selectedCategory,
             ),
           ),
         );

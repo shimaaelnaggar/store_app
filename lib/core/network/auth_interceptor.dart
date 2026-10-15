@@ -46,7 +46,6 @@ class AuthInterceptor extends Interceptor {
       return handler.next(err);
     }
 
-    // Don't refresh tokens for login or registration requests.
     final path = options.uri.path;
     if (path.endsWith('/api/auth/login') ||
         path.endsWith('/api/auth/register') ||

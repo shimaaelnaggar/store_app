@@ -23,6 +23,17 @@ class PaginationButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int totalPages = (totalCount / pageSize).ceil();
+    if (totalCount == 0) {
+      return const SizedBox.shrink();
+    }
+
+    final int startItem =
+        totalCount == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+
+    final int endItem = (currentPage * pageSize) > totalCount
+        ? totalCount
+        : currentPage * pageSize;
+
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
@@ -75,7 +86,8 @@ class PaginationButtons extends StatelessWidget {
               TextButton(
                 onPressed:
                     hasNextPage ? () => onPageChanged(currentPage + 1) : null,
-                child: const Text('Next',style: TextStyle(color: AppColors.primaryColor)),
+                child: const Text('Next',
+                    style: TextStyle(color: AppColors.primaryColor)),
               ),
             ],
           ),
@@ -83,8 +95,7 @@ class PaginationButtons extends StatelessWidget {
             height: AppSpacing.sm,
           ),
           Text(
-            'Showing ${((currentPage - 1) * pageSize) + 1}'
-            ' of $totalCount products',
+            'Showing $startItem-$endItem of $totalCount products',
             style: AppTextStyles.bodyMedium,
           ),
         ],

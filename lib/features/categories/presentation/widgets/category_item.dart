@@ -21,6 +21,7 @@ class CategoryItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20.r),
       child: Container(
+        alignment: Alignment.center,
         padding: EdgeInsets.symmetric(
           horizontal: 16.w,
           vertical: 9.h,
