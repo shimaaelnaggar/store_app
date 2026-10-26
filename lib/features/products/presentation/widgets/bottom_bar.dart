@@ -53,7 +53,7 @@ class ProductBottomBar extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  '\$${totalPrice.toStringAsFixed(2)}',
+                  '${totalPrice.toStringAsFixed(2)} EGP',
                   style: TextStyle(
                     color: AppColors.textPrimaryColor,
                     fontSize: 18.sp,

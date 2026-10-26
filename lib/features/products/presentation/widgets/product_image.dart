@@ -6,39 +6,50 @@ import '../../../../core/constants/app_colors.dart';
 
 class ProductImage extends StatelessWidget {
   final String imageUrl;
-  const ProductImage({Key? key, required this.imageUrl}) : super(key: key);
+  final double? width;
+  final double? height;
+  final double borderRadius;
+  final double horizontalPadding;
+  final BoxFit fit;
+  final double placeholderIconSize;
+  const ProductImage(
+      {Key? key,
+      required this.imageUrl,
+      this.width,
+      this.height,
+      this.borderRadius = 12,
+      this.horizontalPadding = 0,
+      this.fit = BoxFit.cover,
+      this.placeholderIconSize = 28})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Container(
-        height: 310.h,
-        width: double.infinity,
-        decoration: BoxDecoration(
+    return Container(
+      height: height?.h,
+      width: width?.w,
+      decoration: BoxDecoration(
           color: AppColors.surfaceColor,
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        clipBehavior: Clip.antiAlias,
+          borderRadius: BorderRadius.circular(borderRadius.r)),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: EdgeInsets.all(12.r),
         child: CachedNetworkImage(
           imageUrl: imageUrl,
-          fit: BoxFit.contain,
-          placeholder: (context, url) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
-              ),
-            );
-          },
-          errorWidget: (context, url, error) {
-            return const Center(
-              child: Icon(
-                Icons.image_not_supported_outlined,
-                size: 50,
-                color: AppColors.textSecondaryColor,
-              ),
-            );
-          },
+          fit: fit,
+          placeholder: (context, url) => const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primaryColor,
+              strokeWidth: 2,
+            ),
+          ),
+          errorWidget: (context, url, error) => Center(
+            child: Icon(
+              Icons.image_not_supported_outlined,
+              size: placeholderIconSize.r,
+              color: AppColors.textSecondaryColor,
+            ),
+          ),
         ),
       ),
     );

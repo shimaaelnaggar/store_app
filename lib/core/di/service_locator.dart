@@ -28,6 +28,15 @@ import '../../features/auth/domain/repos/verify_email_repository_contract.dart';
 import '../../features/auth/domain/usecases/resend_otp_usecase.dart';
 import '../../features/auth/presentation/bloc/register/register_bloc.dart';
 import '../../features/auth/presentation/bloc/verify_email/verify_email_bloc.dart';
+import '../../features/cart/data/data_sources/cart_remote_data_source.dart';
+import '../../features/cart/data/repos/cart_repository_impl.dart';
+import '../../features/cart/domain/repos/cart_repository_contract.dart';
+import '../../features/cart/domain/usecases/add_to_cart_usecase.dart';
+import '../../features/cart/domain/usecases/decrement_quantity_usecase.dart';
+import '../../features/cart/domain/usecases/get_cart_usecase.dart';
+import '../../features/cart/domain/usecases/remove_cart_item_usecase.dart';
+import '../../features/cart/domain/usecases/update_quantity_usecase.dart';
+import '../../features/cart/presentation/bloc/cart_bloc.dart';
 import '../../features/categories/data/data_sources/categories_remote_data_source.dart';
 import '../../features/categories/data/repos/categories_repository_impl.dart';
 import '../../features/categories/presentation/bloc/categories_bloc.dart';
@@ -120,6 +129,59 @@ void setupAppServiceLocator() {
   getIt.registerFactory<CategoriesBloc>(
     () => CategoriesBloc(
       getCategoriesUseCase: getIt<GetCategoriesUseCase>(),
+    ),
+  );
+
+  //cart
+  getIt.registerLazySingleton<BaseCartRemoteDataSource>(
+    () => CartRemoteDataSource(
+      dio: getIt<Dio>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<CartRepositoryContract>(
+    () => AddToCartRepositoryImpl(
+      remoteDataSource: getIt<BaseCartRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<AddToCartUseCase>(
+    () => AddToCartUseCase(
+      repository: getIt<CartRepositoryContract>(),
+    ),
+  );
+
+  getIt.registerFactory<CartBloc>(
+    () => CartBloc(
+      addToCartUseCase: getIt<AddToCartUseCase>(),
+      getCartUseCase: getIt<GetCartUseCase>(),
+      updateQuantityUseCase: getIt<UpdateQuantityUseCase>(),
+      decrementQuantityUseCase: getIt<DecrementQuantityUseCase>(),
+      removeCartItemUseCase: getIt<RemoveCartItemUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GetCartUseCase>(
+    () => GetCartUseCase(
+      repository: getIt<CartRepositoryContract>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<UpdateQuantityUseCase>(
+    () => UpdateQuantityUseCase(
+      repository: getIt<CartRepositoryContract>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<DecrementQuantityUseCase>(
+    () => DecrementQuantityUseCase(
+      repository: getIt<CartRepositoryContract>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<RemoveCartItemUseCase>(
+    () => RemoveCartItemUseCase(
+      repository: getIt<CartRepositoryContract>(),
     ),
   );
 

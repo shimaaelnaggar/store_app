@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/features/products/presentation/widgets/error_section.dart';
 import 'package:store/features/products/presentation/widgets/categories_badge.dart';
 import 'package:store/features/products/presentation/widgets/price.dart';
 import 'package:store/features/products/presentation/widgets/product_image.dart';
 import 'package:store/features/products/presentation/widgets/rating.dart';
-import 'package:store/features/products/presentation/widgets/top_bar.dart';
+import 'package:store/core/widgets/app_top_bar.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/helper/calculate_discount_price.dart';
+import '../../../../core/helper/show_snack_bar.dart';
+import '../../../cart/presentation/bloc/cart_bloc.dart';
+import '../../../cart/presentation/bloc/cart_event.dart';
+import '../../../cart/presentation/bloc/cart_state.dart';
 import '../bloc/products_details/products_details_bloc.dart';
 import '../bloc/products_details/products_details_event.dart';
 import '../bloc/products_details/products_details_state.dart';
@@ -32,140 +37,176 @@ class _ProductsDetailsViewState extends State<ProductsDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: BlocProvider<ProductsDetailsBloc>(
-        create: (context) => getIt<ProductsDetailsBloc>()
-          ..add(
-            GetSingleProductEvent(
-              id: widget.id,
+    return BlocListener<CartBloc, CartState>(
+      listener: (BuildContext context, CartState state) {
+        if (state is AddToCartSuccessState) {
+          showSnackBar(
+            message: state.response.message,
+            backgroundColor: Colors.green,
+            context: context,
+          );
+          context.push('/cart');
+        }
+
+        if (state is AddToCartFailureState) {
+          showSnackBar(
+            message: state.errorMessage,
+            backgroundColor: Colors.red,
+            context: context,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        body: BlocProvider<ProductsDetailsBloc>(
+          create: (context) => getIt<ProductsDetailsBloc>()
+            ..add(
+              GetSingleProductEvent(
+                id: widget.id,
+              ),
             ),
-          ),
-        child: BlocBuilder<ProductsDetailsBloc, ProductsDetailsStates>(
-          builder: (context, state) {
-            if (state is ProductsDetailsLoading) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                ),
-              );
-            }
-
-            if (state is ProductsDetailsFailure) {
-              return ErrorSection(
-                  message: state.errorMessage,
-                  onPressed: () => GetSingleProductEvent(id: widget.id));
-            }
-
-            if (state is ProductsDetailsSuccess) {
-              final product = state.product;
-
-              if (product.stock == 0 && quantity != 0) {
-                quantity = 0;
+          child: BlocBuilder<ProductsDetailsBloc, ProductsDetailsStates>(
+            builder: (context, state) {
+              if (state is ProductsDetailsLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
+                );
               }
 
-              if (product.stock > 0 && quantity == 0) {
-                quantity = 1;
+              if (state is ProductsDetailsFailure) {
+                return ErrorSection(
+                    message: state.errorMessage,
+                    onPressed: () => GetSingleProductEvent(id: widget.id));
               }
-              final double discountedPrice = calculateDiscountedPrice(
-                price: product.price,
-                discountPercentage: product.discountPercentage,
-              );
 
-              final double totalPrice = discountedPrice * quantity;
-              return SafeArea(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: CustomScrollView(
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: TopBar(
-                                isFavorite: isFavorite,
-                                onPressed: () => setState(() {
-                                      isFavorite = !isFavorite;
-                                    })),
-                          ),
-                          SliverToBoxAdapter(
-                            child:
-                                ProductImage(imageUrl: product.coverPictureUrl),
-                          ),
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16.w,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 20.h),
-                                  CategoriesBadge(
-                                      categories: product.categories),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    product.name,
-                                    style: TextStyle(
-                                      color: AppColors.textPrimaryColor,
-                                      fontSize: 24.sp,
-                                      fontWeight: FontWeight.w700,
-                                      height: 1.2,
+              if (state is ProductsDetailsSuccess) {
+                final product = state.product;
+
+                if (product.stock == 0 && quantity != 0) {
+                  quantity = 0;
+                }
+
+                if (product.stock > 0 && quantity == 0) {
+                  quantity = 1;
+                }
+                final double discountedPrice = calculateDiscountedPrice(
+                  price: product.price,
+                  discountPercentage: product.discountPercentage,
+                );
+
+                final double totalPrice = discountedPrice * quantity;
+                return SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: CustomScrollView(
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: AppTopBar(
+                                  title: 'Product Details',
+                                  icon: isFavorite
+                                      ? Icons.favorite_outlined
+                                      : Icons.favorite_border_outlined,
+                                  iconColor: isFavorite
+                                      ? AppColors.favouriteColor
+                                      : AppColors.textSecondaryColor,
+                                  onPressed: () => setState(() {
+                                        isFavorite = !isFavorite;
+                                      })),
+                            ),
+                            SliverToBoxAdapter(
+                                child: ProductImage(
+                              imageUrl: product.coverPictureUrl,
+                              height: 300,
+                              borderRadius: 20,
+                              horizontalPadding: 16,
+                            )),
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 20.h),
+                                    CategoriesBadge(
+                                        categories: product.categories),
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      product.name,
+                                      style: TextStyle(
+                                        color: AppColors.textPrimaryColor,
+                                        fontSize: 24.sp,
+                                        fontWeight: FontWeight.w700,
+                                        height: 1.2,
+                                      ),
                                     ),
-                                  ),
-                                  Rating(
-                                    rating: product.rating,
-                                    reviewsCount: product.reviewsCount,
-                                    iconSize: 26,
-                                    ratingFontSize: 16,
-                                    reviewsFontSize: 14,
-                                  ),
-                                  SizedBox(height: 16.h),
-                                  Price(
-                                    price: product.price,
-                                    discountPercentage:
-                                        product.discountPercentage,
-                                  ),
-                                  SizedBox(height: 20.h),
-                                  ProductInfo(product: product),
-                                  SizedBox(height: 24.h),
-                                  _buildDescription(product.description),
-                                  SizedBox(height: 24.h),
-                                  Quantity(
-                                    stock: product.stock,
-                                    quantity: quantity,
-                                    onIncrement: () {
-                                      setState(() {
-                                        quantity++;
-                                      });
-                                    },
-                                    onDecrement: () {
-                                      setState(() {
-                                        quantity--;
-                                      });
-                                    },
-                                  ),
-                                  SizedBox(height: 24.h),
-                                  if (product.stock > 0)
-                                    _buildStockText(product.stock),
-                                  SizedBox(height: 30.h),
-                                ],
+                                    Rating(
+                                      rating: product.rating,
+                                      reviewsCount: product.reviewsCount,
+                                      iconSize: 26,
+                                      ratingFontSize: 16,
+                                      reviewsFontSize: 14,
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    Price(
+                                      price: product.price,
+                                      discountPercentage:
+                                          product.discountPercentage,
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    ProductInfo(product: product),
+                                    SizedBox(height: 24.h),
+                                    _buildDescription(product.description),
+                                    SizedBox(height: 24.h),
+                                    Quantity(
+                                      stock: product.stock,
+                                      quantity: quantity,
+                                      onIncrement: () {
+                                        setState(() {
+                                          quantity++;
+                                        });
+                                      },
+                                      onDecrement: () {
+                                        setState(() {
+                                          quantity--;
+                                        });
+                                      },
+                                    ),
+                                    SizedBox(height: 24.h),
+                                    if (product.stock > 0)
+                                      _buildStockText(product.stock),
+                                    SizedBox(height: 30.h),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    ProductBottomBar(
-                      totalPrice: totalPrice,
-                      stock: product.stock,
-                      onAddToCart: () {},
-                    ),
-                  ],
-                ),
-              );
-            }
+                      ProductBottomBar(
+                        totalPrice: totalPrice,
+                        stock: product.stock,
+                        onAddToCart: () {
+                          context.read<CartBloc>().add(
+                                AddToCartEvent(
+                                  productId: product.id,
+                                  quantity: quantity,
+                                ),
+                              );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-            return const SizedBox();
-          },
+              return const SizedBox();
+            },
+          ),
         ),
       ),
     );
