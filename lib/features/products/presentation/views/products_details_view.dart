@@ -11,7 +11,7 @@ import 'package:store/core/widgets/app_top_bar.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/helper/calculate_discount_price.dart';
-import '../../../../core/helper/show_snack_bar.dart';
+import '../../../../core/helper/show_message.dart';
 import '../../../cart/presentation/bloc/cart_bloc.dart';
 import '../../../cart/presentation/bloc/cart_event.dart';
 import '../../../cart/presentation/bloc/cart_state.dart';
@@ -40,7 +40,7 @@ class _ProductsDetailsViewState extends State<ProductsDetailsView> {
     return BlocListener<CartBloc, CartState>(
       listener: (BuildContext context, CartState state) {
         if (state is AddToCartSuccessState) {
-          showSnackBar(
+          showMessage(
             message: state.response.message,
             backgroundColor: Colors.green,
             context: context,
@@ -49,7 +49,7 @@ class _ProductsDetailsViewState extends State<ProductsDetailsView> {
         }
 
         if (state is AddToCartFailureState) {
-          showSnackBar(
+          showMessage(
             message: state.errorMessage,
             backgroundColor: Colors.red,
             context: context,

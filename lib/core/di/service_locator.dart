@@ -18,6 +18,12 @@ import 'package:store/features/products/data/repos/products_repository_implement
 import 'package:store/features/products/domain/repos/product_repository_contract.dart';
 import 'package:store/features/products/domain/usecases/get_all_products_usecase.dart';
 import 'package:store/features/products/presentation/bloc/products/products_bloc.dart';
+import '../../features/adresses/data/data_sources/addresses_remote_datasource.dart';
+import '../../features/adresses/data/repos/addreses_repository_impl.dart';
+import '../../features/adresses/domain/repos/addresses_repository_contract.dart';
+import '../../features/adresses/domain/usecases/add_addresses_usecase.dart';
+import '../../features/adresses/domain/usecases/get_addresses_usecase.dart';
+import '../../features/adresses/presentation/bloc/addresses_bloc.dart';
 import '../../features/auth/data/data_sources/register_remote_dataSource.dart';
 import '../../features/auth/data/data_sources/resend_otp_remote_datasource.dart';
 import '../../features/auth/data/repos/register_repository_impl.dart';
@@ -40,9 +46,21 @@ import '../../features/cart/presentation/bloc/cart_bloc.dart';
 import '../../features/categories/data/data_sources/categories_remote_data_source.dart';
 import '../../features/categories/data/repos/categories_repository_impl.dart';
 import '../../features/categories/presentation/bloc/categories_bloc.dart';
+import '../../features/orders/data/data_sources/order_remote_datasource.dart';
+import '../../features/orders/data/repos/order_repository_impl.dart';
+import '../../features/orders/domain/repos/order_repository_contract.dart';
+import '../../features/orders/domain/usecases/get_orders_usecase.dart';
+import '../../features/orders/domain/usecases/place_order_usecase.dart';
+import '../../features/orders/presentation/bloc/order_bloc.dart';
 import '../../features/products/domain/usecases/get_single_product_usecase.dart';
 import '../../features/products/presentation/bloc/products_details/products_details_bloc.dart';
+import '../../features/profile/data/data_sources/profile_remote_datasource.dart';
+import '../../features/profile/data/repos/profile_repository_impl.dart';
+import '../../features/profile/domain/repos/profile_repository_contract.dart';
+import '../../features/profile/domain/usecases/get_profile_usecase.dart';
+import '../../features/profile/presentation/bloc/profile_bloc.dart';
 import '../routing/app_router.dart';
+import '../storage/address_selected_storage.dart';
 import '../storage/auth_storage.dart';
 
 final getIt = GetIt.instance;
@@ -59,6 +77,12 @@ void setupAppServiceLocator() {
     ),
   );
 
+  getIt.registerLazySingleton<AddressSelectionStorage>(
+    () => AddressSelectionStorage(
+      storage: getIt<FlutterSecureStorage>(),
+    ),
+  );
+
   getIt.registerLazySingleton<Dio>(
     () => DioClient.createDio(
       getIt<AuthStorage>(),
@@ -68,6 +92,71 @@ void setupAppServiceLocator() {
   getIt.registerLazySingleton<Dio>(
     () => DioClient.createRefreshDio(),
     instanceName: 'refreshDio',
+  );
+
+  getIt.registerLazySingleton<Dio>(
+    () => DioClient.createLocationSearchDio(),
+    instanceName: 'locationSearchDio',
+  );
+
+//addresses
+  getIt.registerLazySingleton<BaseAddressesRemoteDataSource>(
+    () => AddressRemoteDataSource(
+      dio: getIt<Dio>(),
+    ),
+  );
+  getIt.registerLazySingleton<AddressesRepositoryContract>(
+    () => AddressesRepositoryImpl(
+      dataSource: getIt<BaseAddressesRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<GetAddressesUseCase>(
+    () => GetAddressesUseCase(
+      repository: getIt<AddressesRepositoryContract>(),
+    ),
+  );
+  getIt.registerLazySingleton<AddAddressesUseCase>(
+    () => AddAddressesUseCase(
+      repository: getIt<AddressesRepositoryContract>(),
+    ),
+  );
+  getIt.registerFactory<AddressesBloc>(
+    () => AddressesBloc(
+      getAddressesUseCase: getIt<GetAddressesUseCase>(),
+      addAddressesUseCase: getIt<AddAddressesUseCase>(),
+    ),
+  );
+
+  //orders
+  getIt.registerLazySingleton<BaseOrderRemoteDataSource>(
+    () => OrderRemoteDataSource(
+      dio: getIt<Dio>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<OrderRepositoryContract>(
+    () => OrderRepositoryImpl(
+      dataSource: getIt<BaseOrderRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<PlaceOrderUseCase>(
+    () => PlaceOrderUseCase(
+      repository: getIt<OrderRepositoryContract>(),
+    ),
+  );
+
+  getIt.registerFactory<OrderBloc>(
+    () => OrderBloc(
+      placeOrderUseCase: getIt<PlaceOrderUseCase>(),
+      getOrdersUseCase: getIt<GetOrdersUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GetOrdersUseCase>(
+    () => GetOrdersUseCase(
+      repository: getIt<OrderRepositoryContract>(),
+    ),
   );
 
 //products
@@ -258,6 +347,31 @@ void setupAppServiceLocator() {
     () => LoginBloc(
       loginUseCase: getIt<LoginUseCase>(),
       authStorage: getIt<AuthStorage>(),
+    ),
+  );
+
+  //profile
+  getIt.registerLazySingleton<BaseProfileRemoteDataSource>(
+    () => ProfileRemoteDataSource(
+      dio: getIt<Dio>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<ProfileRepositoryContract>(
+    () => ProfileRepositoryImpl(
+      dataSource: getIt<BaseProfileRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GetProfileUseCase>(
+    () => GetProfileUseCase(
+      repository: getIt<ProfileRepositoryContract>(),
+    ),
+  );
+
+  getIt.registerFactory<ProfileBloc>(
+    () => ProfileBloc(
+      getProfileUseCase: getIt<GetProfileUseCase>(),
     ),
   );
 

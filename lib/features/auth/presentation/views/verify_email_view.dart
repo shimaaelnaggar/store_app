@@ -8,7 +8,7 @@ import 'package:store/features/auth/presentation/widgets/verify_button.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/service_locator.dart';
-import '../../../../core/helper/show_snack_bar.dart';
+import '../../../../core/helper/show_message.dart';
 import '../bloc/verify_email/verify_email_bloc.dart';
 import '../bloc/verify_email/verify_email_event.dart';
 import '../bloc/verify_email/verify_email_state.dart';
@@ -76,7 +76,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
       child: BlocListener<VerifyEmailBloc, VerifyEmailState>(
         listener: (context, state) {
           if (state is VerifyEmailSuccessState) {
-            showSnackBar(
+            showMessage(
               context: context,
               message: 'Email verified successfully',
               backgroundColor: Colors.green,
@@ -84,13 +84,13 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
 
             context.go('/login');
           } else if (state is VerifyEmailErrorState) {
-            showSnackBar(
+            showMessage(
               context: context,
               message: state.errorMessage,
               backgroundColor: Colors.red,
             );
           } else if (state is ResendOtpSuccessState) {
-            showSnackBar(
+            showMessage(
               context: context,
               message: 'A new verification code has been sent',
               backgroundColor: Colors.green,
@@ -98,7 +98,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
 
             startTimer();
           } else if (state is ResendOtpErrorState) {
-            showSnackBar(
+            showMessage(
               context: context,
               message: state.errorMessage,
               backgroundColor: Colors.red,

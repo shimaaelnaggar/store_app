@@ -7,6 +7,11 @@ class Cart extends Equatable {
   final List<CartItem> cartItems;
 
   const Cart({required this.cartId, required this.cartItems});
+
+  int get totalQuantity => cartItems.fold(
+        0,
+        (total, item) => total + item.quantity,
+      );
   @override
   List<Object?> get props => [cartId, cartItems];
 }

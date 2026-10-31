@@ -6,7 +6,7 @@ import 'package:store/features/auth/presentation/widgets/sign_up_form.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/service_locator.dart';
-import '../../../../core/helper/show_snack_bar.dart';
+import '../../../../core/helper/show_message.dart';
 
 import '../bloc/register/register_bloc.dart';
 import '../bloc/register/register_state.dart';
@@ -26,7 +26,7 @@ class SignUpView extends StatelessWidget {
               extra: state.email,
             );
           } else if (state is RegisterErrorState) {
-            showSnackBar(
+            showMessage(
               context: context,
               message: state.errorMessage,
               backgroundColor: Colors.red,

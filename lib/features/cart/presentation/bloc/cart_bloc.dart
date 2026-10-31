@@ -43,6 +43,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         },
         (response) {
           emit(AddToCartSuccessState(response: response));
+          add(GetCartEvent());
         },
       );
     });

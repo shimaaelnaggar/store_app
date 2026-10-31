@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:store/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:store/features/cart/presentation/bloc/cart_event.dart';
 import 'package:store/features/cart/presentation/bloc/cart_state.dart';
 import 'package:store/core/widgets/app_top_bar.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/service_locator.dart';
+import '../../../../core/routing/app_router.dart';
+import '../../../adresses/presentation/bloc/addresses_bloc.dart';
+import '../../../profile/presentation/bloc/profile_bloc.dart';
 import '../widgets/cart_bottom_bar.dart';
 import '../widgets/cart_item_card.dart';
 
@@ -118,7 +123,14 @@ class CartView extends StatelessWidget {
                             (sum, item) => sum + item.quantity,
                           ),
                           onCheckout: () {
-                            // TODO: Open checkout
+                            context.push(
+                              '/orders',
+                              extra: CheckoutArgs(
+                                cartBloc: context.read<CartBloc>(),
+                                addressesBloc: getIt<AddressesBloc>(),
+                                profileBloc: getIt<ProfileBloc>(),
+                              ),
+                            );
                           },
                         ),
                       ],

@@ -15,6 +15,9 @@ class AppColors {
 
   static const ratingColor = Color(0xFFB87500);
   static const favouriteColor = Color(0xFFBA1A1A);
+  static const errorColor = Color(0xFFFF0000);
+  static const warningColor = Color(0xFFFFA500);
+  static const successColor = Color(0xFF008000);
 
   static const secondaryColor = Color(0xFFFFFFFF);
 static const productsCountBackgroundColor = Color(0xffDBE1FF);

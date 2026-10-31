@@ -6,7 +6,7 @@ import 'package:store/features/auth/presentation/widgets/login_form.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/service_locator.dart';
-import '../../../../core/helper/show_snack_bar.dart';
+import '../../../../core/helper/show_message.dart';
 import '../bloc/login/login_bloc.dart';
 import '../bloc/login/login_state.dart';
 
@@ -24,7 +24,7 @@ class LoginView extends StatelessWidget {
               '/',
             );
           } else if (state is LoginErrorState) {
-            showSnackBar(
+            showMessage(
               context: context,
               message: state.errorMessage,
               backgroundColor: Colors.red,

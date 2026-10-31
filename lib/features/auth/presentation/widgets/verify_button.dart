@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/helper/show_snack_bar.dart';
+import '../../../../core/helper/show_message.dart';
 import 'custom_button.dart';
 import '../../domain/entities/verify_email.dart';
 import '../bloc/verify_email/verify_email_bloc.dart';
@@ -38,7 +38,7 @@ class VerifyButton extends StatelessWidget {
                 text: 'Verify Email',
                 onPressed: () {
                   if (otp.isEmpty) {
-                    showSnackBar(
+                    showMessage(
                       context: context,
                       message: 'Please enter the verification code',
                       backgroundColor: Colors.red,

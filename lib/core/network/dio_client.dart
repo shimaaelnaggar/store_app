@@ -45,4 +45,19 @@ class DioClient {
       ),
     );
   }
+
+  static Dio createLocationSearchDio(){
+    return Dio(
+      BaseOptions(
+        baseUrl: 'https://nominatim.openstreetmap.org/',
+        connectTimeout: timeOut,
+        receiveTimeout: timeOut,
+        sendTimeout: timeOut,
+        headers: {
+          'User-Agent': 'store-app',
+        },
+      ),
+    );
+
+  }
 }
